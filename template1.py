@@ -390,6 +390,10 @@ def create_pdf(which):
     filename = f'./{recipetitle}.pdf'
     #f.render("./recipe-template.pdf")
     f.render(filename)
+    print(f'\n\n{"=" * 45}')
+    print('PDF has been generated')
+    print('=' * 45)
+    print('\n\n')
 
 
 def menu():
