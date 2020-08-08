@@ -337,27 +337,8 @@ elements = [
 ]
 
 
-class PDF(FPDF):
-    def footer(self):
-        self.set_y(-15)
-        self.set_font('Arial', 'I', 0)
-        self.cell(0, 10, 'Page ' + str(self.page_no()), 0, 0, 'C')
-
-    def ingredientlist(self, txt):
-        self.set_font('Arial', '', 10)
-        self.set_xy(17, 114)
-        self.multi_cell(100, 300, txt)
-        self.ln()
-
-    def instructionset(self, txt):
-        self.set_xy(117, 114)
-        self.multi_cell(100, 300, txt)
-        self.ln()
-
-
 def create_pdf(which):
-    # pdf = PDF()
-    # pdf.add_page()
+
     recipetitle = recipe_table_dat[which][1]
     recipeid = recipe_table_dat[which][0]
     f = Template(format="Letter", elements=elements, title="Recipe Printout")
@@ -366,21 +347,20 @@ def create_pdf(which):
 
     #we FILL some of the fields of the template with the information we want
     #note we access the elements treating the template instance as a "dict"
-    # f["company_name"] = "Sample Company"
-    # f["company_logo"] = "pyfpdf/tutorial/logo.png"
+
     f["header"] = f"Greg's cookbook - {recipetitle} - Recipe ID {recipeid}"
     f["title"] = recipetitle  # 'Mongolian Beef and Spring Onions'
     f["recipeimage"] = images_table_dat[which][2]
     f["description"] = recipe_table_dat[which][8]
     f["source"] = recipe_table_dat[which][2]
+    f['servings'] = f'Servings: {recipe_table_dat[which][3]}'
+    f['time'] = f'Total Time: {recipe_table_dat[which][4]}'
+    f['rating'] = f'Rating: {recipe_table_dat[which][5]}'
+
     itms = len(ingredients_table_dat[which])
     ings = ''
     for itm in range(itms):
         ings = ings + ingredients_table_dat[which][itm][5] + "\n"
-    # print(ings)
-    f['servings'] = f'Servings: {recipe_table_dat[which][3]}'
-    f['time'] = f'Total Time: {recipe_table_dat[which][4]}'
-    f['rating'] = f'Rating: {recipe_table_dat[which][5]}'
     f["ingredientshead"]
     f["ingredientitems"] = ings
     f["instructionhead"]
@@ -388,10 +368,10 @@ def create_pdf(which):
 
     #and now we render the page
     filename = f'./{recipetitle}.pdf'
-    #f.render("./recipe-template.pdf")
     f.render(filename)
     print(f'\n\n{"=" * 45}')
-    print('PDF has been generated')
+    print('        PDF has been generated')
+    print('     Please open the PDF manually')
     print('=' * 45)
     print('\n\n')
 
@@ -411,63 +391,6 @@ def menu():
         return -1
 
 
-def printrecs(which):
-    print(f'Printing record {which}')
-    w = int(which) - 1
-    print(recipe_table_dat[w])
-    print(ingredients_table_dat[w])
-    print(instructions_table_dat[w])
-    print(cats_table_dat[w])
-    print(images_table_dat[w])
-
-
-def test_it():
-    number_of_recipes = len(recipe_table_dat)
-    print(f'Number of recipies available: {number_of_recipes}')
-    for i in range(number_of_recipes):
-        print('---------------------------------------------------')
-        print(f'Testing recipe {i+1}')
-        print(
-            f'\nRecipe Title: {recipe_table_dat[i][1]} Record: {recipe_table_dat[i][0]}'
-        )
-        print(f'\nIngredients: {len(ingredients_table_dat[i])}')
-        for ing in range(len(ingredients_table_dat[i])):
-            print(ingredients_table_dat[i][ing][5])
-        print('\nInstructions:')
-        print(instructions_table_dat[i][2])
-        print(f'\nCats ({len(cats_table_dat[i])} Available):')
-        for cat in range(len(cats_table_dat[i])):
-            print(cats_table_dat[i][cat][1])
-        print('\nImages:')
-        print(images_table_dat[i][2])
-        print('\n')
-    print('---------------------------------------------')
-
-
-# Still to do...
-# def resize_image(imagefile):
-#     original = Image.open('local_image.png')
-#         wid, hei = original.size
-#         if shared.debug:
-#             print(f'Width: {wid} - Height: {hei}')
-#         if wid >= hei:
-#             ratio = 300.0/wid
-#             if shared.debug:
-#                 print(ratio)
-#             w2 = wid * ratio
-#             h2 = hei * ratio
-#         else:
-#             ratio = 300./hei
-#             if shared.debug:
-#                 print(ratio)
-#             w2 = wid * ratio
-#             h2 = hei * ratio
-#         if shared.debug:
-#             print(f'New Width = {int(w2)} - New Height = {int(h2)}')
-#         _img1 = original.resize((int(w2), int(h2)), Image.ANTIALIAS)
-#         _img2 = ImageTk.PhotoImage(_img1)
-
-
 def mainroutine():
     loop = True
     while loop:
@@ -476,7 +399,6 @@ def mainroutine():
             print('Invalid selection.  Please try again')
         else:
             print(f'Requested recipe: {resp} \n')
-            # test_it()
             create_pdf(int(resp) - 1)
 
 
